@@ -32,6 +32,7 @@ set(PONGONE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/render_buffer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/renderer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/vector.h
 )
 
 target_sources(${PONGONE_EXE_NAME} PRIVATE ${PONGONE_SOURCES})
