@@ -5,6 +5,14 @@
 namespace pongone {
 
 struct RenderBuffer::Impl {
+    ~Impl() {
+        delete bufferData;
+        bufferData = nullptr;
+
+        delete orderingTable;
+        orderingTable = nullptr;
+    }
+
     size_t bufferSize{0u};
     size_t orderingTableSize{0u};
     uint8_t *bufferData{nullptr};
@@ -18,11 +26,8 @@ RenderBuffer::RenderBuffer()
     : m_impl{new Impl{}} {}
 
 RenderBuffer::~RenderBuffer() {
-    delete m_impl->bufferData;
-    m_impl->bufferData = nullptr;
-
-    delete m_impl->orderingTable;
-    m_impl->orderingTable = nullptr;
+    delete m_impl;
+    m_impl = nullptr;
 }
 
 void RenderBuffer::initialize(const RenderBufferDescriptor &descriptor) {
@@ -32,12 +37,21 @@ void RenderBuffer::initialize(const RenderBufferDescriptor &descriptor) {
     m_impl->orderingTableSize = descriptor.orderingTableSize;
     m_impl->orderingTable = new uint32_t[m_impl->orderingTableSize];
 
-    SetDefDispEnv(&m_impl->displayEnvironment, descriptor.x, descriptor.y, descriptor.width, descriptor.height);
-    SetDefDrawEnv(&m_impl->drawEnvironment, descriptor.x, descriptor.y, descriptor.width, descriptor.height);
-}
+    SetDefDispEnv(&m_impl->displayEnvironment,
+                  descriptor.position.x(),
+                  descriptor.position.y(),
+                  descriptor.size.x(),
+                  descriptor.size.y());
+    SetDefDrawEnv(&m_impl->drawEnvironment,
+                  descriptor.position.x(),
+                  descriptor.position.y(),
+                  descriptor.size.x(),
+                  descriptor.size.y());
 
-void RenderBuffer::setClearColor(uint8_t r, uint8_t g, uint8_t b) {
-    setRGB0(&m_impl->drawEnvironment, r, g, b);
+    setRGB0(&m_impl->drawEnvironment,
+            descriptor.clearColor.r(),
+            descriptor.clearColor.g(),
+            descriptor.clearColor.b());
     m_impl->drawEnvironment.isbg = 1u;
 }
 
